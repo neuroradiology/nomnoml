@@ -55,9 +55,10 @@ class App {
     var reloadStorage = () => {
       lastValidSource = null
       this.filesystem.configureByRoute(location.hash)
-      var source = this.filesystem.storage.read() || ''
-      this.editor.setValue(source || this.defaultSource)
-      this.sourceChanged()
+      this.filesystem.storage.read().then(source => {
+        this.editor.setValue(source || '')
+        this.sourceChanged()
+      }, (err: Error) => console.log(err))
     }
 
     window.addEventListener('hashchange', () => reloadStorage());

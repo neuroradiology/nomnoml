@@ -3,18 +3,20 @@ function FileMenu(selector: string, app: App): Vue {
     el: selector,
 
     data: {
-      source: ''
+      source: '',
+      items: []
     },
 
     mounted() {
       app.signals.on('source-changed', (src: string) => this.onSourceChange(src))
-      app.filesystem.signals.on('updated', (src: string) => this.$forceUpdate())
+      app.filesystem.signals.on('updated', (src: string) => {
+        app.filesystem.storage.files().then(items => {
+          this.items = items
+        })
+      })
     },
 
     methods: {
-      items() {
-        return app.filesystem.files()
-      },
 
       isActive(item: FileEntry): boolean {
         return this.isLocalFile() && app.filesystem.activeFile.name === item.name
@@ -40,12 +42,13 @@ function FileMenu(selector: string, app: App): Vue {
       saveAs() {
         var name = prompt('Name your diagram')
         if (name) {
-          if (app.filesystem.files().some((e: FileEntry) => e.name === name)) {
+          if (this.items.some((e: FileEntry) => e.name === name)) {
             alert('A file named '+name+' already exists.')
             return
           }
-          app.filesystem.moveToFileStorage(name, app.currentSource())
-          location.href = '#file/' + encodeURIComponent(name)
+          app.filesystem.moveToFileStorage(name, app.currentSource()).then(() => {
+            location.href = '#file/' + encodeURIComponent(name)
+          })
         }
       },
 

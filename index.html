@@ -282,7 +282,7 @@
 						<a href="#"><icon id=home-outline></icon> Home</a>
 					</div>
 
-					<div v-for="item in items()" v-bind:class="{ 'file-entry': true, 'active': isActive(item) }">
+					<div v-for="item in items" v-bind:class="{ 'file-entry': true, 'active': isActive(item) }">
 						<a v-bind:href="itemPath(item)">{{item.name}}</a>
 						<a v-on:click="discard(item)" title="Discard this diagram">
 							<svg width="24" height="24" viewBox="0 0 24 24">
