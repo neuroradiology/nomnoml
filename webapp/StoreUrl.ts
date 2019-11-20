@@ -1,6 +1,7 @@
 class StoreUrl implements GraphStore {
+  isMappedToFileEntry: boolean = false
   kind: StoreKind = 'url'
-  constructor(private source: string) {}
+  constructor(public source: string) {}
   async files(): Promise<FileEntry[]> {
     return JSON.parse(localStorage['nomnoml.file_index'] || '[]') as FileEntry[]
   }

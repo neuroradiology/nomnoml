@@ -278,7 +278,7 @@
 
 					<h2>Local files</h2>
 
-					<div v-bind:class="{ 'file-entry': true, active: isAtHome() }">
+					<div v-if="showHomeFileEntry()" v-bind:class="{ 'file-entry': true, active: isAtHome() }">
 						<a href="#"><icon id=home-outline></icon> Home</a>
 					</div>
 

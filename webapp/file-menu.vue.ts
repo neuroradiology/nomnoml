@@ -1,4 +1,4 @@
-function FileMenu(selector: string, app: App): Vue {
+function FileMenu(selector: string, app: App, storage: GraphStore): Vue {
   return new Vue({
     el: selector,
 
@@ -10,7 +10,7 @@ function FileMenu(selector: string, app: App): Vue {
     mounted() {
       app.signals.on('source-changed', (src: string) => this.onSourceChange(src))
       app.filesystem.signals.on('updated', (src: string) => {
-        app.filesystem.storage.files().then(items => {
+        storage.files().then(items => {
           this.items = items
         })
       })
@@ -19,11 +19,11 @@ function FileMenu(selector: string, app: App): Vue {
     methods: {
 
       isActive(item: FileEntry): boolean {
-        return this.isLocalFile() && app.filesystem.activeFile.name === item.name
+        return item.backingStore === storage.kind && app.filesystem.activeFile.name === item.name
       },
 
-      isLocalFile() {
-        return app.filesystem.storage.kind === 'local_file'
+      showHomeFileEntry(): boolean {
+        return storage.kind === 'local_file'
       },
 
       isAtHome() {

@@ -1,41 +1,56 @@
 class FileSystem {
   signals: Observable = new Observable()
-  activeFile: FileEntry
-  storage: GraphStore = new StoreDefaultBuffer()
+  activeFile: FileEntry = new FileEntry(null, 'local_default')
+  storage: GraphStore= new StoreDefaultBuffer()
+  stores = {
+    local_default: new StoreDefaultBuffer(),
+    local_file: new StoreLocal(),
+    cloud: new StoreCloud('/api/files/'),
+    url: new StoreUrl('')
+  }
+
+  async read(): Promise<string> {
+    return await this.storage.read(this.activeFile.name)
+  }
+
+  async save(source: string): Promise<void> {
+    await this.storage.save(this.activeFile.name, source)
+  }
 
   async moveToFileStorage(name: string, source: string) {
-    var fileStore = new StoreLocal(name)
-    fileStore.insert(source)
+    var fileStore = new StoreLocal()
+    fileStore.insert(name, source)
     this.signals.trigger('updated')
   }
 
   async moveToLocalStorage(source: string): Promise<void> {
     this.storage = new StoreDefaultBuffer()
-    await this.storage.save(source)
+    await this.storage.save(null, source)
   }
 
   async discard(entry: FileEntry): Promise<void> {
-    var fileStore = new StoreLocal(entry.name)
-    await fileStore.clear()
+    var fileStore = new StoreLocal()
+    await fileStore.clear(entry.name)
     this.signals.trigger('updated')
   }
 
   async configureByRoute(path: string) {
     var route = Route.from(path)
-    this.storage = this.routedStorage(route)
+    this.storage = this.stores[this.routedStoreKind(route)]
     var index = await this.storage.files()
-    this.activeFile = nomnoml.skanaar.find(index, e => e.name === route.path) || new FileEntry(route.path, 'local_file')
+    var ephemeralFile = new FileEntry(decodeURIComponent(route.path), this.storage.kind)
+    if (this.storage.isMappedToFileEntry)
+      this.activeFile = nomnoml.skanaar.find(index, e => e.name === route.path) || ephemeralFile
+    else
+      this.activeFile = ephemeralFile
     this.signals.trigger('updated')
   }
 
-  routedStorage(route: Route): GraphStore {
-    if (route.context === 'view') {
-      return new StoreUrl(decodeURIComponent(route.path))
-    }
-    if (route.context === 'file') {
-      return new StoreLocal(route.path)
-    }
-    return new StoreDefaultBuffer()
+  private routedStoreKind(route: Route): StoreKind {
+    if (route.context === 'view') return 'url'
+    if (route.context === 'file') return 'local_file'
+    if (route.context === 'cloud') return 'cloud'
+    return 'local_default'
   }
 }
 
@@ -51,10 +66,11 @@ class FileEntry {
 }
 
 interface GraphStore {
+  isMappedToFileEntry: boolean
   files(): Promise<FileEntry[]>
-  read(): Promise<string>
-  insert(src: string): Promise<void>
-  save(src: string): Promise<void>
-  clear(): Promise<void>
+  read(name: string): Promise<string>
+  insert(name: string, src: string): Promise<void>
+  save(name: string, src: string): Promise<void>
+  clear(name: string): Promise<void>
   kind: StoreKind
 }

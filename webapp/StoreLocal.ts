@@ -1,32 +1,30 @@
 class StoreLocal implements GraphStore {
+  isMappedToFileEntry: boolean = true
   kind: StoreKind = 'local_file'
-  storageKey: string
-  constructor(public name: string) {
-    this.storageKey = 'nomnoml.files/' + name
-  }
+  prefix: string = 'nomnoml.files/'
   async files(): Promise<FileEntry[]> {
     return JSON.parse(localStorage['nomnoml.file_index'] || '[]') as FileEntry[]
   }
-  async read(): Promise<string> {
-    return localStorage[this.storageKey]
+  async read(name: string): Promise<string> {
+    return localStorage[this.prefix+name]
   }
-  async insert(source: string): Promise<void> {
-    var entry: FileEntry = new FileEntry(this.name, 'local_file')
+  async insert(name: string, source: string): Promise<void> {
+    var entry: FileEntry = new FileEntry(name, 'local_file')
     var index = await this.files()
-    if (!nomnoml.skanaar.find(index, e => e.name === this.name)) {
+    if (!nomnoml.skanaar.find(index, e => e.name === name)) {
       index.push(entry)
       index.sort((a,b) => a.name.localeCompare(b.name))
       localStorage['nomnoml.file_index'] = JSON.stringify(index)
     }
-    localStorage[this.storageKey] = source
+    localStorage[this.prefix+name] = source
   }
-  async save(source: string): Promise<void> {
-    localStorage[this.storageKey] = source
+  async save(name: string, source: string): Promise<void> {
+    localStorage[this.prefix+name] = source
   }
-  async clear(): Promise<void> {
-    localStorage.removeItem(this.storageKey)
+  async clear(name: string): Promise<void> {
+    localStorage.removeItem(this.prefix+name)
     var files = await this.files()
-    var index = files.filter(e => e.name != this.name)
+    var index = files.filter(e => e.name != name)
     localStorage['nomnoml.file_index'] = JSON.stringify(index)
   }
 }

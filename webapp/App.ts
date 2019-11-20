@@ -55,7 +55,7 @@ class App {
     var reloadStorage = () => {
       lastValidSource = null
       this.filesystem.configureByRoute(location.hash)
-      this.filesystem.storage.read().then(source => {
+      this.filesystem.read().then(source => {
         this.editor.setValue(source || '')
         this.sourceChanged()
       }, (err: Error) => console.log(err))
@@ -72,7 +72,7 @@ class App {
         var model = nomnoml.draw(canvasElement, source, this.panner.zoom())
         lastValidSource = source
         this.panner.positionCanvas(canvasElement)
-        this.filesystem.storage.save(source)
+        this.filesystem.save(source)
         this.downloader.source = source
         this.downloader.setFilename(model.config.title)
         this.signals.trigger('source-changed', source)
@@ -113,7 +113,7 @@ class App {
   }
 
   toggleSidebar(id: string){
-    var sidebars = ['about', 'reference', 'export', 'files']
+    var sidebars = ['about', 'reference', 'export', 'files', 'cloud']
     for(var key of sidebars){
       if (id !== key)
         document.getElementById(key).classList.remove('visible')
