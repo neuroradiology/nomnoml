@@ -54,8 +54,9 @@ class App {
 
     var reloadStorage = () => {
       lastValidSource = null
-      this.filesystem.configureByRoute(location.hash)
-      this.filesystem.read().then(source => {
+      this.filesystem.configureByRoute(location.hash).then(() => {
+        return this.filesystem.read()
+      }).then(source => {
         this.editor.setValue(source || '')
         this.sourceChanged()
       }, (err: Error) => console.log(err))
@@ -72,10 +73,11 @@ class App {
         var model = nomnoml.draw(canvasElement, source, this.panner.zoom())
         lastValidSource = source
         this.panner.positionCanvas(canvasElement)
-        this.filesystem.save(source)
         this.downloader.source = source
         this.downloader.setFilename(model.config.title)
-        this.signals.trigger('source-changed', source)
+        this.filesystem.save(source).then(() => {
+          this.signals.trigger('source-changed', source)
+        })
       } catch (e){
         devenv.setError(e)
         // Rerender canvas with last successfully rendered text.

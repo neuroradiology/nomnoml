@@ -17,9 +17,8 @@ class FileSystem {
     await this.storage.save(this.activeFile.name, source)
   }
 
-  async moveToFileStorage(name: string, source: string) {
-    var fileStore = new StoreLocal()
-    fileStore.insert(name, source)
+  async moveToStorage(storage: GraphStore, name: string, source: string) {
+    storage.insert(name, source)
     this.signals.trigger('updated')
   }
 
@@ -29,8 +28,7 @@ class FileSystem {
   }
 
   async discard(entry: FileEntry): Promise<void> {
-    var fileStore = new StoreLocal()
-    await fileStore.clear(entry.name)
+    await this.storage.clear(entry.name)
     this.signals.trigger('updated')
   }
 
@@ -59,6 +57,7 @@ type StoreKind = 'local_default' | 'local_file' | 'cloud' | 'url'
 class FileEntry {
   date: string = (new Date()).toISOString()
   collaborators: string[] = []
+  baseRevision: number = 0
   constructor(
     public name: string,
     public backingStore: StoreKind
