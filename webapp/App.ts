@@ -121,13 +121,20 @@ class App {
     return this.editor.getValue()
   }
 
+  sidebar: null|string = null
+
   toggleSidebar(id: string){
+    this.sidebar = (this.sidebar === id) ? null : id
     var sidebars = ['about', 'reference', 'export', 'files', 'cloud']
     for(var key of sidebars){
-      if (id !== key)
-        document.getElementById(key).classList.remove('visible')
+      document.getElementById(key).classList.remove('visible')
     }
-    document.getElementById(id).classList.toggle('visible')
+    if (this.sidebar) {
+      document.body.classList.add('sidebar-open')
+      document.getElementById(this.sidebar).classList.add('visible')
+    }
+    else
+      document.body.classList.remove('sidebar-open')
   }
 
   discardCurrentGraph(){

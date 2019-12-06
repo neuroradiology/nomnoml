@@ -367,3 +367,8 @@ a:hover img {
 	right: 5px;
 	cursor: pointer;
 }
+
+.sidebar,
+.sidebar-open .tools {
+	background: #fffcf4;
+}
