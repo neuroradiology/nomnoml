@@ -1,7 +1,12 @@
 class FileSystem {
   signals: Observable = new Observable()
-  activeFile: FileEntry = new FileEntry(null, 'local_default')
-  storage: GraphStore= new StoreDefaultBuffer()
+  activeFile: FileEntry = {
+    date: '',
+    collaborators: [],
+    name: null,
+    revision: 0,
+  }
+  storage: GraphStore = new StoreDefaultBuffer()
   stores = {
     local_default: new StoreDefaultBuffer(),
     local_file: new StoreLocal(),
@@ -18,7 +23,7 @@ class FileSystem {
   }
 
   async moveToStorage(storage: GraphStore, name: string, source: string) {
-    storage.insert(name, source)
+    await storage.insert(name, source)
     this.signals.trigger('updated')
   }
 
@@ -35,8 +40,16 @@ class FileSystem {
   async configureByRoute(path: string) {
     var route = Route.from(path)
     this.storage = this.stores[this.routedStoreKind(route)]
+    if (this.storage.kind === 'url') {
+      this.storage.save('url', route.path)
+    }
     var index = await this.storage.files()
-    var ephemeralFile = new FileEntry(decodeURIComponent(route.path), this.storage.kind)
+    var ephemeralFile: FileEntry = {
+      name: 'ephemeral',
+      collaborators: [],
+      revision: 0,
+      date: (new Date()).toISOString(),
+    }
     if (this.storage.isMappedToFileEntry)
       this.activeFile = nomnoml.skanaar.find(index, e => e.name === route.path) || ephemeralFile
     else
@@ -50,26 +63,4 @@ class FileSystem {
     if (route.context === 'cloud') return 'cloud'
     return 'local_default'
   }
-}
-
-type StoreKind = 'local_default' | 'local_file' | 'cloud' | 'url'
-
-class FileEntry {
-  date: string = (new Date()).toISOString()
-  collaborators: string[] = []
-  baseRevision: number = 0
-  constructor(
-    public name: string,
-    public backingStore: StoreKind
-  ) {}
-}
-
-interface GraphStore {
-  isMappedToFileEntry: boolean
-  files(): Promise<FileEntry[]>
-  read(name: string): Promise<string>
-  insert(name: string, src: string): Promise<void>
-  save(name: string, src: string): Promise<void>
-  clear(name: string): Promise<void>
-  kind: StoreKind
 }

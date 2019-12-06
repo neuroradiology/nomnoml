@@ -7,8 +7,8 @@ class StoreCloud implements GraphStore {
 
   async files(): Promise<FileEntry[]> {
     var response = await fetch('/api/files')
-    var names: string[] = await response.json()
-    return names.map(name => new FileEntry(name, this.kind))
+    var entries: any[] = await response.json()
+    return entries
   }
 
   async read(name: string): Promise<string> {

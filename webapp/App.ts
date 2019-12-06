@@ -1,13 +1,33 @@
 class App {
   panner: CanvasPanner
   filesystem: FileSystem
-  defaultSource: string
   editor: CodeMirrorEditor
   sourceChanged: () => void
   downloader: DownloadLinks
+  store: { notices: { text: string }[] } = { notices: [] }
   signals: Observable = new Observable()
   on = this.signals.on
   off = this.signals.off
+  defaultSource = `[Pirate|eyeCount: Int|raid();pillage()|
+[beard]--[parrot]
+[beard]-:>[foul mouth]
+]
+
+[<abstract>Marauder]<:--[Pirate]
+[Pirate]- 0..7[mischief]
+[jollyness]->[Pirate]
+[jollyness]->[rum]
+[jollyness]->[singing]
+[Pirate]-> *[rum|tastiness: Int|swig()]
+[Pirate]->[singing]
+[singing]<->[rum]
+
+[<start>st]->[<state>plunder]
+[plunder]->[<choice>more loot]
+[more loot]->[st]
+[more loot] no ->[<end>e]
+
+[<actor>Sailor] - [<usecase>shiver me;timbers]`
 
   constructor(
     nomnoml: Nomnoml,
@@ -15,13 +35,11 @@ class App {
     saveAs: (blob: Blob, name: string) => void,
     private _: Underscore
   ) {
-    var body = document.querySelector('body')
     var lineNumbers = document.getElementById('linenumbers')
     var lineMarker = document.getElementById('linemarker')
     var textarea = document.getElementById('textarea') as HTMLTextAreaElement
     var canvasElement = document.getElementById('canvas') as HTMLCanvasElement
     var canvasPanner = document.getElementById('canvas-panner')
-    var canvasTools = document.getElementById('canvas-tools')
 
     this.editor = codeMirror.fromTextArea(textarea, {
       lineNumbers: true,
@@ -45,10 +63,7 @@ class App {
     var devenv = new DevEnv(editorElement, lineMarker, lineNumbers)
     this.panner = new CanvasPanner(canvasPanner, () => this.sourceChanged(), _.throttle)
     this.downloader = new DownloadLinks(canvasElement, saveAs)
-    new HoverMarker('canvas-mode', body, [canvasPanner, canvasTools])
     new Tooltips(document.getElementById('tooltip'), document.querySelectorAll('.tools a'))
-
-    this.defaultSource = (document.getElementById('defaultGraph') || { innerHTML: '' }).innerHTML
 
     var lastValidSource: string = null
 
@@ -94,7 +109,7 @@ class App {
   loadSvg(svg: string) {
     var svgNodes = (new DOMParser()).parseFromString(svg,'text/xml')
     if(svgNodes.getElementsByTagName('desc').length !== 1) {
-      alert("SVG did not have nomnoml code embedded within it.")
+      this.notify("SVG did not have nomnoml code embedded within it.")
       return
     }
     var code = svgNodes.getElementsByTagName('desc')[0].childNodes[0].nodeValue
@@ -104,14 +119,6 @@ class App {
 
   currentSource(): string {
     return this.editor.getValue()
-  }
-
-  magnifyViewport(diff: number){
-    this.panner.magnify(diff)
-  }
-
-  resetViewport(){
-    this.panner.reset()
   }
 
   toggleSidebar(id: string){
@@ -146,11 +153,20 @@ class App {
 
   handleOpeningFiles(files: FileList) {
     if(files.length !== 1) {
-      alert('You can only upload one file at a time.')
+      this.notify('You can only upload one file at a time.')
       return
     }
     var reader = new FileReader()
     reader.onload = () => this.loadSvg(reader.result as string)
     reader.readAsText(files[0])
+  }
+
+  notify(text: string) {
+    this.store.notices.push({ text: text })
+  }
+
+  closeNotice(notice: Notice) {
+    var i = this.store.notices.indexOf(notice)
+    this.store.notices.splice(i, 1)
   }
 }

@@ -9,7 +9,12 @@ class StoreLocal implements GraphStore {
     return localStorage[this.prefix+name]
   }
   async insert(name: string, source: string): Promise<void> {
-    var entry: FileEntry = new FileEntry(name, 'local_file')
+    var entry: FileEntry = {
+      date: (new Date()).toISOString(),
+      collaborators: [],
+      name: name,
+      revision: 0,
+    }
     var index = await this.files()
     if (!nomnoml.skanaar.find(index, e => e.name === name)) {
       index.push(entry)

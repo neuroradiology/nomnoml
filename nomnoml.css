@@ -1,8 +1,8 @@
 
 html, body {
 	height: 100%;
-    padding: 0;
-    margin: 0;
+	padding: 0;
+	margin: 0;
 	overflow-x: hidden;
 	overflow-y: hidden;
 	background: #fdf6e3;
@@ -18,8 +18,8 @@ h1 {
 	margin: 0;
 }
 img, svg {
-    vertical-align: bottom;
-    border: 0;
+	vertical-align: bottom;
+	border: 0;
 }
 
 
@@ -73,13 +73,12 @@ img, svg {
 
 #canvas-panner {
 	position: absolute;
-	z-index: 2;
-	width: 33%;
-	height: 100%;
-	background: rgba(0,0,0,0);
+	z-index: 3;
 	top: 0;
-	right: 20px;
+	right: 0;
 	bottom: 0;
+	width: 33%;
+	background: rgba(0,0,0,0);
 	cursor: move;
 }
 #linenumbers {
@@ -229,13 +228,13 @@ a:hover img {
 }
 .content {
 	display: block;
-  position: absolute;
-  padding: 10px 10px 200px 20px;
-  left: 0;
-  right: 0;
-  top: 70px;
-  bottom: 0;
-  overflow: auto;
+	position: absolute;
+	padding: 10px 10px 200px 20px;
+	left: 0;
+	right: 0;
+	top: 70px;
+	bottom: 0;
+	overflow: auto;
 	color: #586e75;
 	font-family: Consolas, Monaco, monospace;
 }
@@ -243,14 +242,14 @@ a:hover img {
 	font-family: Calibri, Helvetica, sans-serif
 }
 .content pre {
-  border-radius: 3px;
-  background: #eee8d5;
-  padding: 5px;
-  margin: 2px 0px;
-  font-family: Consolas, Monaco, monospace;
-  font-size: 14px;
+	border-radius: 3px;
+	background: #eee8d5;
+	padding: 5px;
+	margin: 2px 0px;
+	font-family: Consolas, Monaco, monospace;
+	font-size: 14px;
 }
-.content h3{
+.content h3 {
 	display: block;
 	font-family: Calibri, Helvetica, sans-serif;
 	color: #93a1a1;
@@ -258,7 +257,7 @@ a:hover img {
 	font-size: inherit;
 	font-weight: normal;
 }
-.content h2{
+.content h2 {
 	font-size: inherit;
 	display: block;
 	font-family: Calibri, Helvetica, sans-serif;
@@ -300,3 +299,71 @@ a:hover img {
 .file-entry:hover { background: rgba(0,0,0,0.07); }
 .file-entry a:first-child { flex-grow: 1; }
 .file-entry img { width: 24px; height: 24px; vertical-align: baseline; }
+
+.file-menu input {
+	display: block;
+	border: 2px solid #888;
+	color: #888;
+	border-radius: 6px;
+	padding: 3px;
+	margin: 2px 0;
+	font-size: inherit;
+	width: 90%;
+	background: #fff8;
+}
+.file-menu button {
+	margin: 2px 0;
+	border-radius: 5px;
+	-webkit-appearance: none;
+	appearance: none;
+	font-size: inherit;
+	border: 2px solid #888;
+	background: #888;
+	color: #fdf6e3;
+}
+.file-menu .warning-message {
+	padding: 10px;
+	background: #F004;
+	border-radius: 5px;
+	font-weight: bold;
+}
+.file-menu .file-tools {
+	border-bottom: 1px solid #0002;
+	margin: 0 -10px 0 -20px;
+	padding: 0 0 10px 20px;
+}
+.gauge {
+	margin: 15px 0;
+	background: #0004;
+	border-radius: 5px;
+	overflow: hidden;
+	width: 80%;
+}
+.gauge-bar {
+	background: #000A;
+	height: 10px;
+}
+
+.alert-list {
+	position: absolute;
+	top: 20px;
+	right: 349px;
+	width: 300px;
+}
+
+.alert {
+	position: relative;
+	padding: 10px 20px;
+	margin: 0 0 20px 0;
+	font-family: sans-serif;
+	color: #444;
+	background: #fffcf4;
+	border-radius: 5px;
+	box-shadow: 0 3px 6px #0004;
+}
+.alert-close {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	cursor: pointer;
+}

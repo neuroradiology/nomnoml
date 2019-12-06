@@ -28,7 +28,7 @@ interface Underscore {
 declare class Vue {
     constructor(config: any)
     static component<TData, TMethods>(name: string, config: {
-      props?: string[],
+      props?: any,
       data?: TData,
       methods?: TMethods,
       mounted?(): void,

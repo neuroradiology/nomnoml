@@ -12,7 +12,7 @@ Vue.component('file-list', {
       <button v-on:click.prevent="saveAs()">Save as...</button>
     </div>
     <div v-for="item in items" v-bind:class="{ 'file-entry': true, 'active': isActive(item) }">
-      <a v-bind:href="itemPath(item)">{{item.name}} #{{item.baseRevision}}</a>
+      <a v-bind:href="itemPath(item)">{{item.name}}</a>
       <a v-on:click="discard(item)" title="Discard this diagram">
         <icon id=trash></icon>
       </a>
@@ -29,7 +29,8 @@ Vue.component('file-list', {
   methods: {
 
     isActive(item: FileEntry): boolean {
-      return item.backingStore === this.storage.kind && this.app.filesystem.activeFile.name === item.name
+      var isActiveStorage = (this.app.filesystem.storage.kind === this.storage.kind)
+      return isActiveStorage && this.app.filesystem.activeFile.name === item.name
     },
 
     itemPath(item: FileEntry) {
@@ -40,7 +41,7 @@ Vue.component('file-list', {
       var name = prompt('Name your diagram')
       if (name) {
         if (this.items.some((e: FileEntry) => e.name === name)) {
-          alert('A file named '+name+' already exists.')
+          this.notify('A file named '+name+' already exists.')
           return
         }
         this.app.filesystem.moveToStorage(this.storage, name, this.app.currentSource()).then(() => {

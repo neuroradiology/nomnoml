@@ -1,24 +1,22 @@
-function StorageTools(selector: string, app: App) {
-  return new Vue({
-    el: selector,
-
-    mounted() {
-      app.filesystem.signals.on('updated', (src: string) => this.$forceUpdate())
-    },
-
-    methods: {
-      isUrlStorage() {
-        return (app.filesystem.storage.kind == 'url')
-      },
-
-      isLocalFileStorage() {
-        return (app.filesystem.storage.kind == 'local_file')
-      },
-
-      saveViewModeToStorage() {
-        app.saveViewModeToStorage()
-      }
-    }
-
-  })
-}
+Vue.component('storage-tools', {
+  props: ['storagekind', 'save'],
+  template: `
+  <div class="storage-tools">
+    <span class="storage-status alert" v-bind:class="{ visible: storagekind == 'url' }">
+      View mode, changes are not saved.
+      <a v-on:click.prevent="save" href="/"
+         title="Save this diagram to localStorage">save</a>
+      <a href="#" title="Discard this diagram">close</a>
+    </span>
+    
+    <span class="storage-status alert" v-bind:class="{ visible: storagekind == 'local_file' }">
+      Editing local file
+      <a href="#" title="Exit from this file">close</a>
+    </span>
+    
+    <span class="storage-status alert" v-bind:class="{ visible: storagekind == 'cloud' }">
+      Editing cloud file
+      <a href="#" title="Exit from this file">close</a>
+    </span>
+  </div>`
+})

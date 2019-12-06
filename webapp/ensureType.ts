@@ -1,23 +1,23 @@
-function ensureType(template: any, obj: any): any {
+function ensureType<T = any>(template: T, obj: any): T {
   if (Array.isArray(template)){
     if (Array.isArray(obj)) {
       if (template.length == 0) {
-        return obj
+        return obj as unknown as T
       } else {
-        return obj.map(e => ensureType(template[0], e)).filter(e => e !== undefined)
+        return obj.map(e => ensureType(template[0], e)).filter(e => e !== undefined) as unknown as T
       }
     } else {
       return undefined
     }
   }
   if ('number' == typeof template) {
-    return ('number' == typeof obj) ? obj : undefined
+    return ('number' == typeof obj) ? obj as unknown as T : undefined
   }
   if ('string' == typeof template) {
-    return ('string' == typeof obj) ? obj : undefined
+    return ('string' == typeof obj) ? obj as unknown as T : undefined
   }
   if ('boolean' == typeof template) {
-    return ('boolean' == typeof obj) ? obj : undefined
+    return ('boolean' == typeof obj) ? obj as unknown as T : undefined
   }
   if ('object' == typeof template) {
     if ('object' == typeof obj) {
