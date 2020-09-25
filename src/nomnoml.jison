@@ -35,6 +35,7 @@ parts
 association
   : class IDENT class      {
            var t = $2.trim().replace(/\\(\[|\]|\|)/g, '$'+'1').match('^(.*?)([<:o+]*-/?-*[:o+>]*)(.*)$');
+           if (!t) throw new Error('Classifiers must be separated by a relation or a line break')
            $$ = {assoc:t[2], start:$1, end:$3, startLabel:t[1].trim(), endLabel:t[3].trim()};
   };
 

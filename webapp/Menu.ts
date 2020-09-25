@@ -36,6 +36,6 @@ function Menu(props: { app: App }) {
         }, el(Icon, { id: 'trash' })),
 
         div({ id: 'tooltip' }, hint),
-        el(StorageTools, { app }),
+        el(SystemBanners, { app }),
     )
 }
